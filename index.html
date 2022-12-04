@@ -1,62 +1,107 @@
-<!DOCTYPE HTML>
-<HTML LAND="en"> 
+<!DOCTYPE html>
+<html lang="en">
 
-    <head>
-      <meta charset="UTF-8"> 
-      <meta http-equiv="X-UA-Compatible" content="IE-edge">
-      <meta name="viewport" content="'width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+  <!--Title of page-->
+  <title>WeatherForYou</title>
+</head>
 
-      <!--Title of page-->
-      <title>Weather Dashboard</title>
-      <link rel="stylesheet" href="style.css">
-    </head>
+<body id="bg">
 
-    <body>
-    <headher>
-            <h1>Weather Dashboard</h1>
- </headher>
+    <div class="logo-nav-container">
+  
+  
+      <nav>
+        <ul>
+          <li><a class="active" href="#">Sign In</a></li>
+          <li><a class="active" href="#">Home</a></li>
+          <li><a class="active" href="#">Language</a></li>
+          <li><a class="active" href="#">Features</a></li>
+        </ul>
+      </nav>
+    </div>
+  
+    <header>
+      <h1>WeatherForYou</h1>
+    </header>
+  
+    <main>
+      <div id="main-container">
+  
+        <aside id="right-col">
+          <div class="search-section">
+            <input type="text" id="location-input" placeholder="Enter a location" />
+            <div id="error-message"></div>
+            <button id="search">Search</button>
+            <div id="map"></div>
+  
+            <section class="saved-locations"></section>
+            <button id="save-button">Save location</button>
+            <ul id="appended-location"></ul>
+            </section>
+        </aside>
+  
+        <section id="left-col">
+          <div id="title-row">
+            <section id="locationSummary">
+              <div class="summary-item">
+                <p>Selected Location: </p>
+                <p id="your-location"></p>
+              </div>
+              <div class="summary-item">
+                <p>Current date and Time: </p>
+                <p id="date-and-time"></p>
+              </div>
+            </section>
+          </div>
+  
+          <h1>Next 5 days weather</h1>
+  
+          <div id="day-weather-row"></div>
+  
+          <h1>Extra weather info</h1>
+  
+          <div id="bottom-row">
+  
+            <div id="temp-value" class="box-shadow extra-weather-info">Temperature: </div>
+            <div id="humidity_value" class="box-shadow extra-weather-info">Humidity: </div>
+            <div id="wind_gust_value" class="box-shadow extra-weather-info">Wind Gust: </div>
+            <div id="uvi-value" class="box-shadow extra-weather-info">UV Index: </div>
+            <div id="feels-like-value" class="box-shadow extra-weather-info">Feels Like: </div>
+            <div id="wind-speed-value" class="box-shadow extra-weather-info">Wind Speed: </div>
+          </div>
+        </section>
+    </main>
+  
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxriIzL6xFwLFzyKhpZ007OoU5597-yVA&callback=initMap&v=weekly"
+      defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="./script.js"></script>
+    <script src="./map.js"></script>
+  
+    <footer>
+      <div class="footer">
+        <h4>Made with ❤️️ by Team React</h4>
+        <p>&copy; 2022 Team React Inc.
+        </p>
+    </footer>
+  
+  </body>
+  
+  </html>
 
-    <main> 
-<!--Left side bar section-->
-    <aside>
-        <div class="search-section"> 
-            <input type="text" id="location" placeholder="Enter a location">
-            <button id="search">search</button>
-            <div id="error"></div>
-     </div>
-     </h1>
-         <div class="recent-section" id="recent-locations">
-        </div>
-     </aside>
-
-     <!--Dashboard Location-->
-     <section>
-         <div id="Weather">
-         <div class="weather-icon">
-            <div class="weather-location" id="location-name">Enter a Location</div>
-            <img src="" alt="">
-         </div>
-
-         <div class="weather-info">
-            <div class="'Temperature">
-            <span>Temperature</span>
-            <span id="temp_value">-</span>>
-         </div>
-
-<div> 
-    <h2 Welcome to the page 
-</div>
-
-     </section>
-
-    
 
 
 
 
-
-
-
-
-   
-    </body>
