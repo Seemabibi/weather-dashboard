@@ -2,15 +2,15 @@ const WEATHER_API_URL = 'https://api.openweathermap.org';
 const WEATHER_API_KEY = '272b68b95d1c42ff7655c2f715fa4879';
 
 
-var myLocation = document.getElementById('location');
+var myLocation = document.getElementById('location-input');
 var searchLocation = document.getElementById('search');
 var saveButton = document.getElementById("save-button")
 var showtext = document.getElementById("your-location")
-
-var fiveDayForecast = 5;
+var showtextError = document.getElementById("error-message")
+var fiveDayForecast = 6;
 
 // Gets the location the user has submitted
-function getLocation(){
+function getLocation() {
   var userInput = myLocation.value;
 
   console.log('Pressed');
@@ -20,7 +20,7 @@ function getLocation(){
 }
 
 // Searches the weather for the location the user has entered, using the weather api to access up to date information
-function lookUp(search){
+function lookUp(search) {
 
   var apiURL = `${WEATHER_API_URL}/geo/1.0/direct?q=${search}&limit=5&appid=${WEATHER_API_KEY}`
 
@@ -36,130 +36,168 @@ function lookUp(search){
 
       displayForecast(locationInput);
     });
-  
-  
+
+
 }
 
-// Displays the weather for the day it is searched for, including the temperature, wind speed and humidity
-function displayCurrentForecast(forecastData){
+// Displays the weather for the next five days for the location submitted
+function displayFutureForecast(forecastData) {
 
-  var currentForecast = forecastData.current;
+  const dailyWeathereRow = document.getElementById('day-weather-row');
+  dailyWeathereRow.innerHTML = '';
 
-  document.getElementById('daily-weather-box').textContent = `${currentForecast.temp_value}°C`;
-  document.getElementById('daily-weather-box').textContent = `${currentForecast.humidity}%`;
-  document.getElementById('daily-weather-box').textContent = `${currentForecast.wind_speed}KM/H`;
-}
-
-// Retrives the weather for the current and future 5 days
-function getWeather(lat, lon){
-
-  // var queryURL = `${WEATHER_API_URL}/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`;
-
-  var queryURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=d91f911bcf2c0f925fb6535547a5ddc9`
-
-  console.log(queryURL);
-
-  fetch(queryURL)
-  .then(function (response) {
-    return response.json();
-  })
-
-  .then(function(data){
-    displayCurrentForecast(data);
-
-    displayFutureForecast(data);
-  })
-
-  
-}
-
-// Lists the future 5-day forecast for the location submitted
-function displayFutureForecast(forecastData){
-  // forecastData.daily;
-
-  const forecastList = document.getElementById('extra-weather-info');
-  forecastList.innerHTML = '';
-
-  // Logs the data for the forecast into the console, displaying the weather every 3 hours
-
-  for(var i=0; i<fiveDayForecast; i++){
+  // Looping through the five days, displaying each day and its weather
+  for (var i = 1; i < fiveDayForecast; i++) {
     var forecast = forecastData.daily[i];
     console.log(forecast);
-    var day = new Date(forecast.dt * 1000).toLocaleDateString('en-GB', {weekday: 'long'});
-    var temp = `${forecast.temp_value}`;
-    var humidity = `${forecast.humidity}%`;
-    var wind = `${forecast.wind_speed}km/h`;
+    var day = new Date(forecast.dt * 1000).toLocaleDateString('en-GB', { weekday: 'long' });
+    var iconCode = forecast.weather[0].icon; 
+    var temp = `${forecast.temp.day}°F`;
 
-    var newForecast = document.createElement('div');
-    newForecast.classList.add('extra-weather-info');
-    // Adds the html tags for the next 5 day forecast
-    newForecast.innerHTML =
-    `<div class='extra-weather-info'>
-      <div>
-        <p>${day}</p>
-      </div>
-      <div>
-        <p>${temp}</p>
-      </div>
-      <div>
-        <p>${humidity}</p>
-      </div>
-      <div>
-        <p>${wind}</p>
-      </div>
-    </div>`
+    var forecastList = document.createElement('div');
+    forecastList.classList.add('daily-weather-style');
+    forecastList.classList.add('box-shadow');
+    // Creates the html tags for the next 5 days with the styles included
+    forecastList.innerHTML =
+      `
+    <div>
+      ${day}
+    </div>
+    <div>
+    ${"<img src=http://openweathermap.org/img/wn/"+iconCode+".png>"}
+  </div>
+    <div>
+      ${temp}
+    </div>
+    `
 
-    forecastList.appendChild(newForecast);
+    dailyWeathereRow.appendChild(forecastList);
   }
 }
 
-function displayForecast(forecastData){
-  document.getElementById('location').textContent = `${forecastData.name}`, `${forecastData.country}`;
+// Retrives the weather for the current and future 5 days
+function getWeather(lat, lon) {
+
+  // Fetches the url to include the locations weather infomation (wind speed/pressure, chances of rain)
+  var queryURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=d91f911bcf2c0f925fb6535547a5ddc9`
+  fetch(queryURL)
+    .then(function (response) {
+      return response.json();
+    })
+
+    .then(function (data) {
+      displayExtraInfo(data);
+
+      displayFutureForecast(data);
+    })
+}
+
+// Displays the extra information about the location other than its temperature for the current day the user has submitted it
+// Examples: humidity, wind speed, chance of rain, pressure
+function displayExtraInfo(forecastData) {
+
+  const extraInfo = forecastData.current;
+
+  document.getElementById('temp-value').textContent = `Temperature: ${extraInfo.temp}°F`
+  document.getElementById('humidity_value').textContent = `Humidity: ${extraInfo.humidity}%`
+  document.getElementById('wind_gust_value').textContent = `Wind Gust: ${extraInfo.wind_gust}mph`
+  document.getElementById('uvi-value').textContent = `UV Index: ${extraInfo.uvi}`
+  document.getElementById('feels-like-value').textContent = `Feels Like: ${extraInfo.feels_like}°F`
+  document.getElementById('wind-speed-value').textContent = `Wind Speed: ${extraInfo.wind_speed}km/h`
+}
+
+// Displays the weather forecast for the location and its country
+function displayForecast(forecastData) {
+  document.getElementById('location-input').textContent = `${forecastData.name}`, `${forecastData.country}`;
   console.log(forecastData);
   getWeather(forecastData.lat, forecastData.lon);
 }
 
+// Displays the current date and time that the user is visiting the site on 
+function time() {
+  var time = moment().format('MMM DD, YYYY, hh:mm:ss a')
+  $('#date-and-time').text(time);
+}
 
-
+time();
 searchLocation.addEventListener("click", getLocation);
-
-
 
 // Displays user location on "your location" when location is searched
 searchLocation.addEventListener("click", function () {
-    var searchText = myLocation;  
-    var showtext1 = showtext
-    
-    showtext1.innerHTML = searchText.value;
-    
+  var searchText = myLocation;
+  var showtext1 = showtext
+  var error = showtextError
+  showtext1.innerHTML = searchText.value;
+
+  if (searchText.value === "") {
+    error.innerHTML = ("Please enter a location")
+  }
+
+  if (searchText.value !== "") {
+    error.innerHTML = ("")
+  }
+
 });
 
+function onSavedLocationClick(e) {
+  var savedLocation = e.target.textContent;
+  var showtext1 = document.getElementById("your-location")
+  var input = document.getElementById('location-input');
+  lookUp(savedLocation);
+  lookupLocation(savedLocation)
 
-// function to display location on search history
-function showHistory() {
-
-    
-  var textval =  document.getElementById("location").value,
-  listItem = document.getElementById("appended-location"),
-  liItem = document.createElement("li"),
-  txtNode = document.createTextNode(textval);
-
-// event-listener to search history "li"
-  liItem.addEventListener("click", function(){
-      var text = liItem.innerHTML
-      var searchText = document.getElementById("location");
-      var showtext2 = showtext
-      lookupLocation(text)
-      
-      showtext2.innerHTML = text
-      searchText.value = liItem.innerHTML
-      
-      
-  })
-
-  liItem.appendChild(txtNode);
-  listItem.appendChild(liItem);
-  
+  showtext1.innerHTML = savedLocation
+  input.value = savedLocation
 }
 
-saveButton.addEventListener("click", showHistory)
+// function to display location on search history
+function onSaveLocation() {
+
+  var textval = document.getElementById("location-input").value;
+  listItem = document.getElementById("appended-location");
+
+  liItem = document.createElement("li");
+  liItem.textContent = textval;
+  liItem.addEventListener("click", onSavedLocationClick);
+  listItem.appendChild(liItem);
+  liItem.addEventListener("click", function () {
+    var searchText = myLocation;
+    var error = showtextError
+
+    if (searchText.value !== "") {
+      error.innerHTML = ("")
+    }
+  });
+
+  console.log(liItem)
+
+  var cities = JSON.parse(localStorage.getItem("cities")) || [];
+  cities.push(textval);
+
+  localStorage.setItem('cities', JSON.stringify(cities));
+}
+
+function loadSavedLocations() {
+  var cities = JSON.parse(localStorage.getItem("cities")) || [];
+
+  listItem = document.getElementById("appended-location");
+  cities.forEach(function (city) {
+    var liItem = document.createElement("li");
+    liItem.textContent = city;
+    liItem.addEventListener("click", onSavedLocationClick);
+    liItem.addEventListener("click", function () {
+      var searchText = myLocation;
+      var error = showtextError
+
+      if (searchText.value !== "") {
+        error.innerHTML = ("")
+      }
+
+    });
+    listItem.appendChild(liItem);
+  });
+}
+
+loadSavedLocations();
+
+saveButton.addEventListener("click", onSaveLocation)
